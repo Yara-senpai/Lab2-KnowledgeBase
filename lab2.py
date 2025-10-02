@@ -4,19 +4,19 @@ class KnowledgeBase:
     def __init__(self):
         # Орієнтований граф: вузол -> список (тип_відношення, інший_вузол)
         self.relations = defaultdict(list)
-        # Довідник підтримуваних типів (не обмежує дані, але зручно мати список)
+
         self.relation_types = [
             "is_a", "part_of", "located_in",
             "teaches", "studies", "offers",
             "enrolled_in", "requires"
         ]
 
-    # -------- CRUD / BUILD --------
+
     def add_relation(self, subj, relation, obj):
         self.relations[subj].append((relation, obj))
         _ = self.relations[obj]  # гарантуємо ключ
 
-    # -------- LISTING (“спеціальні команди”) --------
+    # -------- (“спеціальні команди”) --------
     def list_relations(self, obj):
         """Вивести всі вихідні відношення для об'єкта."""
         if obj not in self.relations:
@@ -98,12 +98,12 @@ class KnowledgeBase:
 
         visited = set([start])
         q = deque([start])
-        parents = {start: (None, None)}  # вузол -> (prev, relation_type)
+        parents = {start: (None, None)}
 
         while q:
             node = q.popleft()
             if node == end:
-                # відновлення шляху
+
                 return True, self._reconstruct_path(parents, start, end)
             for rtype, nxt in self.relations[node]:
                 if nxt not in visited:
@@ -146,7 +146,7 @@ class KnowledgeBase:
                     print("Yes")
                     print(f"Path: {path}")
                 return True
-            # спробуємо у зворотному напрямку
+
             okr, pathr = self.query_any_with_path(obj2, obj1)
             if okr:
                 if echo:
@@ -157,7 +157,7 @@ class KnowledgeBase:
                 print("No")
             return False
         else:
-            # тільки конкретний тип
+
             if self.query_type(obj1, obj2, mode) or self.query_type(obj2, obj1, mode):
                 if echo:
                     print("Yes")
@@ -177,10 +177,11 @@ class KnowledgeBase:
         return ""
 
 
-# ====================== ЗБІРКА ОНТОЛОГІЇ "ОСВІТА" ======================
+
+
 kb = KnowledgeBase()
 
-# --- IS_A: 4+ рівнів ---
+# --- IS_A ---
 kb.add_relation("Entity", "is_a", "Thing")
 kb.add_relation("Organization", "is_a", "Entity")
 kb.add_relation("Educational_Organization", "is_a", "Organization")
@@ -242,7 +243,7 @@ kb.add_relation("Building", "part_of", "Campus")
 kb.add_relation("Campus", "located_in", "City")
 kb.add_relation("City", "located_in", "Country")
 
-# --- ІНСТАНСИ ---
+
 universities = ["KNU_Shevchenko", "Harvard_University"]
 for u in universities:
     kb.add_relation(u, "is_a", "University")
@@ -298,7 +299,7 @@ for city in cities:
 for country in countries:
     kb.add_relation(country, "is_a", "Country")
 
-# --- ЗВʼЯЗУВАННЯ СТРУКТУРИ ---
+
 kb.add_relation("Faculty_Cybernetics", "part_of", "KNU_Shevchenko")
 kb.add_relation("Faculty_Economics", "part_of", "KNU_Shevchenko")
 kb.add_relation("Faculty_Math", "part_of", "Harvard_University")
@@ -371,7 +372,7 @@ kb.add_relation("Book_DB_Design", "part_of", "Relational_Databases")
 kb.add_relation("KNU_Shevchenko", "located_in", "Campus_Kyiv")
 kb.add_relation("Harvard_University", "located_in", "Campus_Cambridge")
 
-# ====================== CLI ======================
+
 HELP = """
 Commands:
   check A B                - чи є звʼязок між A і B (будь-які типи, з виводом шляху)
